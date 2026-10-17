@@ -1,0 +1,6 @@
+{
+  "floor": true, "thermal": true, "scorecard": true, "nightwatch": true, "power_return": true, "house": true, "rules": true, "disk": true, "dialogue": true,
+  "sandbox": true, "pause": true, "docker_guard": true, "guard_kids": true,
+  "pause_avail_margin_gib": 4.0, "pause_psi_full10": 10.0, "pause_deadline_s": 120, "pause_cooldown_s": 900, "pause_min_rss_mib": 256,
+  "sandbox_reserve_gib": 8.0, "sandbox_min_gib": 8.0, "sandbox_box_min_gib": 16.0, "sandbox_notch_gib": 4.0
+}

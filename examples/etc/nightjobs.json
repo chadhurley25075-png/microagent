@@ -1,0 +1,6 @@
+[
+  {"name": "db-dumps",      "due": "03:30", "grace_min": 60,  "probe": {"type": "files_today", "paths": ["/srv/backups/primary-db-latest.dump"]}},
+  {"name": "offsite-sync",  "due": "04:30", "grace_min": 200, "probe": {"type": "log_line", "path": "/var/log/offsite_sync.log", "must": "done exit=", "fail": "exit=1"}},
+  {"name": "index-rebuild", "due": "04:40", "grace_min": 120, "probe": {"type": "json_status", "path": "/srv/memory/index/nightly_status.json"}},
+  {"name": "wiki-build",    "due": "05:15", "grace_min": 120, "probe": {"type": "file_today", "path": "/srv/memory/wiki/index.md"}}
+]

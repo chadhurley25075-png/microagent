@@ -1,0 +1,7 @@
+[
+  {"name": "primary-db",   "port": 5432, "health": "",                                "expect": "",        "runbook": "primary-db"},
+  {"name": "search-index", "port": 8060, "health": "http://127.0.0.1:8060/health",    "expect": "\"ok\"",  "runbook": "search-index"},
+  {"name": "embedder",     "port": 8081, "health": "http://127.0.0.1:8081/health",    "expect": "",        "runbook": "embedder"},
+  {"name": "gateway",      "port": 8090, "health": "http://127.0.0.1:8090/health",    "expect": "\"ok\"",  "runbook": "gateway"},
+  {"name": "reranker",     "port": 8098, "health": "http://127.0.0.1:8098/health",    "expect": "",        "runbook": ""}
+]

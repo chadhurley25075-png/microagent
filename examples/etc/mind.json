@@ -1,0 +1,8 @@
+{
+  "context_full": "/srv/memory/context/full.md",
+  "context_seed": "/srv/memory/context/seed.md",
+  "endpoints": [
+    {"name": "mind-local", "url": "http://127.0.0.1:8888/v1/chat/completions", "model": "local-20b", "timeout": 180},
+    {"name": "mind-small", "url": "http://127.0.0.1:8889/v1/chat/completions", "model": "local-7b",  "timeout": 120, "seed_only": true}
+  ]
+}

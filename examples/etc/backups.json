@@ -1,0 +1,6 @@
+[
+  {"name": "offsite-mirror (second machine)", "host": "backup-host", "job": "offsite-sync",
+   "map": [["/srv/memory", "/mnt/mirror/memory"], ["/srv/data/models", "/mnt/mirror/models"]], "exclude": ["tmp"]},
+  {"name": "spare-drive (local)", "host": null, "job": "offsite-sync", "removable": true,
+   "map": [["/srv/memory", "/mnt/spare/COPY/memory"]]}
+]

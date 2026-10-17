@@ -1,0 +1,4 @@
+{
+  "local mind":    {"http": "http://127.0.0.1:8888/v1/models", "expect": ""},
+  "large advisor": {"http": "http://127.0.0.1:18033/health",   "expect": ""}
+}

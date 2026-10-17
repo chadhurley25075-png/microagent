@@ -1,0 +1,8 @@
+{
+  "watch":   {"data": "/srv/data", "archive": "/mnt/archive", "spare": "/mnt/spare"},
+  "archive": {"path": "/mnt/archive"},
+  "offload": {"from": "/srv/data/models", "to": "/mnt/spare/offload", "to_mount": "/mnt/spare", "to_uuid": "",
+              "trigger_pct": 90, "to_max_pct": 85, "cold_days": 14,
+              "never_words": ["memory", "index", "cache", "frame", "backup", "snapshot", "journal"],
+              "never_tokens": ["live", "bank", "serving", "prod"]}
+}

@@ -1,0 +1,12 @@
+{
+  "silent_ip": "",
+  "rungs": [
+    {"title": "1 network (ssh port)", "probes": [{"name": "router", "tcp": "gateway.lan:22"}],
+     "manual": {"router": "router silent: check its power feed before anything else"}},
+    {"title": "2 other machines (ssh port)", "probes": [{"name": "backup-host", "tcp": "backup-host:22"}, {"name": "gpu-box", "tcp": "gpu-box:22"}],
+     "manual": {"backup-host": "backup-host: press its power button if still dark 5 min after power returns", "gpu-box": "gpu-box: never auto-starts — press the button"}},
+    {"title": "3 engines", "probes": [{"name": "mind-local", "http": "http://127.0.0.1:8888/v1/models", "expect": ""}, {"name": "advisor-large", "http": "http://127.0.0.1:18033/health", "expect": ""}],
+     "manual": {"mind-local": "mind-local dark while its host answers: start its container by hand", "advisor-large": "advisor-large: its own supervisor starts it after boot; wait 10 min first"}}
+  ],
+  "services_manual": "guarded services silent after boot: wait out the boot grace; Micro Agent heals by runbook after it"
+}

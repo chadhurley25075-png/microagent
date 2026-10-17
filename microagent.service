@@ -1,0 +1,31 @@
+[Unit]
+Description=Micro Agent — a small caretaker under the login screen (guards, pins, heals by runbook, journals every act)
+Documentation=file:/opt/microagent/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+# Root executes nothing from a user's home: the interpreter and the program are root-owned under /opt/microagent.
+# -I ignores PYTHON* environment variables and the user site directory.
+ExecStart=/usr/bin/python3 -I /opt/microagent/microagent.py serve
+WorkingDirectory=/opt/microagent
+Restart=always
+RestartSec=10
+# She may mlock the files named in pins.json (pin_cap_bytes in config.json bounds it).
+LimitMEMLOCK=infinity
+# The kernel's OOM killer takes her last of all.
+OOMScoreAdjust=-1000
+# A restart of the unit never kills the runbooks or verifies she has in flight.
+KillMode=process
+Nice=-5
+UMask=0022
+Environment=PYTHONUNBUFFERED=1
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# /var/lib/microagent and /etc/microagent are created root-owned by the init system.
+StateDirectory=microagent
+ConfigurationDirectory=microagent
+
+[Install]
+WantedBy=multi-user.target

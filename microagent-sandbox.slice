@@ -1,0 +1,9 @@
+[Unit]
+Description=Micro Agent sandbox — a memory-bounded slice for test work (benchmarks, batch workers, experiments). Micro Agent re-sizes memory.high/max every tick; these are the standing values when it is not running. Never a guarded service or a serving engine.
+Documentation=file:/opt/microagent/README.md
+
+[Slice]
+MemoryAccounting=yes
+MemoryHigh=8G
+MemoryMax=12G
+MemorySwapMax=0

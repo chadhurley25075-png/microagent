@@ -1,0 +1,6 @@
+[
+  {"name": "advisor-large", "url": "http://127.0.0.1:18033/v1/chat/completions", "model": "local-large", "timeout": 300,
+   "readiness_file": "/srv/memory/advisor_state.json", "enabled": true},
+  {"name": "advisor-mid",   "url": "http://127.0.0.1:8888/v1/chat/completions",  "model": "local-20b",   "timeout": 90, "enabled": true},
+  {"name": "advisor-cli",   "type": "command", "command": "/usr/local/bin/ask-advisor", "timeout": 240, "enabled": false}
+]

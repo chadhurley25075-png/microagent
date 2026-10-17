@@ -1,0 +1,31 @@
+#!/bin/bash
+# microagent-sandbox — run test work inside microagent-sandbox.slice, a memory-bounded USER slice (no sudo, no pid moves).
+# systemd-run --user --scope keeps your cwd, env, stdio and tty. Micro Agent (root) sets the slice's memory.high/max every tick:
+# high = (available + what the sandbox holds) − guarded floor − 8 GiB, the box keeps ≥16 GiB; max = high + 4 GiB; swap 0.
+# A runaway inside is throttled at high and dies alone at max — the guarded services never feel it.
+#   microagent-sandbox run <cmd…>      e.g.  setsid nohup microagent-sandbox run ./bench.sh > ~/bench.log 2>&1 &
+#   microagent-sandbox status          limits, usage, events, pressure, what is running
+#   microagent-sandbox ps              pids inside the slice
+U=$(id -u); export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$U}; export DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}
+SLICE=${MICROAGENT_SANDBOX_SLICE:-microagent-sandbox.slice}
+REL=$(echo "${SLICE%.slice}" | awk -F- '{p=""; out=""; for(i=1;i<=NF;i++){p=(i==1?$i:p"-"$i); out=out (i==1?"":"/") p ".slice"} print out}')
+CG=/sys/fs/cgroup/user.slice/user-$U.slice/user@$U.service/$REL   # the user's manager nests a-b.slice under a.slice
+r() { cat "$CG/$1" 2>/dev/null || echo "-"; }
+gb() { v=$(r "$1"); [ "$v" = max ] && echo max || awk -v b="$v" 'BEGIN{printf "%.1f GB", b/1073741824}'; }
+case "${1:-}" in
+  run)
+    shift; [ $# -gt 0 ] || { echo "usage: microagent-sandbox run <cmd…>" >&2; exit 2; }
+    name=$(basename -- "$1" | tr -c 'A-Za-z0-9_.-' '_' | cut -c1-32)
+    systemctl --user start "$SLICE" 2>/dev/null
+    exec systemd-run --user --scope --quiet --slice="$SLICE" --unit="sandbox-${name}-$$" --description="microagent-sandbox: $*" -- "$@" ;;
+  status)
+    systemctl --user start "$SLICE" 2>/dev/null
+    [ -d "$CG" ] || { echo "$SLICE: not active"; exit 1; }
+    echo "$SLICE  high=$(gb memory.high)  max=$(gb memory.max)  swap.max=$(r memory.swap.max)  using=$(gb memory.current)"
+    echo "events: $(r memory.events | tr '\n' ' ')"; echo "pressure: $(sed -n 2p "$CG/memory.pressure" 2>/dev/null)"
+    n=0; for d in "$CG"/*/; do [ -d "$d" ] || continue; p=$(cat "$d/cgroup.procs" 2>/dev/null | wc -l); [ "$p" -gt 0 ] && { echo "  $(basename "$d")  pids=$p  $(awk -v b="$(cat "$d/memory.current")" 'BEGIN{printf "%.2f GB", b/1073741824}')"; n=$((n+p)); }; done
+    echo "pids in sandbox: $n" ;;
+  ps)
+    for d in "$CG" "$CG"/*/; do [ -d "$d" ] || continue; for p in $(cat "$d/cgroup.procs" 2>/dev/null); do printf '%-8s %-6s %-16s %s\n' "$p" "$(awk '/VmRSS/{printf "%dM",$2/1024}' /proc/$p/status 2>/dev/null)" "$(cat /proc/$p/comm 2>/dev/null)" "$(tr '\0' ' ' </proc/$p/cmdline 2>/dev/null | cut -c1-100)"; done; done ;;
+  *) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
+esac
